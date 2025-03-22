@@ -442,8 +442,11 @@
         function createTransactionStatusChart(data) {
             // Lấy số liệu từ API
             const successCount = data.transaction_stats.success;
-            const failedCount = data.transaction_stats.failed;
+            const failedCount = data.transaction_stats.failed || 0;
             const pendingCount = data.transaction_stats.pending || 0;
+            
+            // Tính tổng các giao dịch không thành công
+            const otherCount = failedCount + pendingCount;
             
             // Hủy chart cũ nếu đã tồn tại
             if (transactionStatusChart) {
@@ -455,18 +458,16 @@
             transactionStatusChart = new Chart(ctx, {
                 type: 'doughnut',
                 data: {
-                    labels: ['Thành công', 'Thất bại', 'Đang xử lý'],
+                    labels: ['Thành công', 'Thất bại'],
                     datasets: [{
-                        data: [successCount, failedCount, pendingCount],
+                        data: [successCount, otherCount],
                         backgroundColor: [
                             'rgba(28, 200, 138, 0.8)',
-                            'rgba(231, 74, 59, 0.8)',
-                            'rgba(246, 194, 62, 0.8)'
+                            'rgba(231, 74, 59, 0.8)'
                         ],
                         borderColor: [
                             'rgba(28, 200, 138, 1)',
-                            'rgba(231, 74, 59, 1)',
-                            'rgba(246, 194, 62, 1)'
+                            'rgba(231, 74, 59, 1)'
                         ],
                         borderWidth: 1
                     }]
@@ -768,7 +769,7 @@
 
         // Gọi updateData lần đầu và thiết lập interval
         updateData();
-        setInterval(updateData, 5000); // Cập nhật mỗi 5 giây
+        setInterval(updateData, 10000); // Cập nhật mỗi 5 giây
 
     </script>
 </body>
